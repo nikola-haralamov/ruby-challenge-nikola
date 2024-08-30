@@ -19,7 +19,7 @@ ActiveRecord::Schema.define(version: 2021_05_13_172112) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "supplier_id"
     t.string "supplier_reference"
-    t.string "state", default: "pending"
+    t.integer "state", default: 0
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["supplier_id"], name: "index_orders_on_supplier_id"
   end
