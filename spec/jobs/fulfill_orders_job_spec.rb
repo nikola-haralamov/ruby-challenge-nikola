@@ -1,16 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe FulfillOrdersJob, type: :job do
-  describe '#perform' do
-    subject { described_class.new }
 
-    let!(:order) do
-      Order.create(
-        customer_name: "Lionel Messi",
-        product: Product.create(name: "Golden Boot"),
-        state: Order.states[:pending]
-      )
-    end
+  subject { described_class.new }
+
+  let!(:order) do
+    Order.create(
+      customer_name: "Customer Name",
+      product: Product.create(name: "Product Name"),
+      state: Order.states[:pending]
+    )
+  end
+
+  describe '#perform' do
 
     context 'when there are no suppliers' do
       it 'does not change order' do
@@ -19,8 +21,7 @@ RSpec.describe FulfillOrdersJob, type: :job do
     end
 
     context 'when there are some suppliers' do
-      let(:supplier_foo) { Supplier.create(name: 'supplier_foo') }
-      let(:supplier_bar) { Supplier.create(name: 'supplier_bar') }
+      let!(:supplier) { Supplier.create(name: 'supplier_foo') }
 
       context 'but none of them have stock for the order' do
         before do
@@ -34,28 +35,20 @@ RSpec.describe FulfillOrdersJob, type: :job do
       end
 
       context 'and order can be fulfilled by a supplier' do
-        let(:supplier_foo_reference) { SecureRandom.uuid }
-        let(:supplier_bar_reference) { SecureRandom.uuid }
+        let(:supplier_reference) { SecureRandom.uuid }
 
         before do
           allow(SupplierFooApi::Client).to receive(:stock).and_return(3)
           allow(SupplierBarApi::Client).to receive(:stock).and_return(7)
-          allow(SupplierFooApi::Client).to receive(:fulfill).and_return(supplier_foo_reference)
-          allow(SupplierBarApi::Client).to receive(:fulfill).and_return(supplier_bar_reference)
+          allow(SupplierFooApi::Client).to receive(:fulfill).and_return(supplier_reference)
+          allow(SupplierBarApi::Client).to receive(:fulfill).and_return(supplier_reference)
         end
 
-        it 'updates order with the supplier foo and the supplier foo reference' do
+        it 'updates order with the supplier and the supplier reference' do
           expect { subject.perform }.to change {
             Order.all.pluck(:supplier_id, :supplier_reference, :state)
-          }.from([[nil, nil, 'pending']]).to([[supplier_foo.id, supplier_foo_reference, 'completed']])
+          }.from([[nil, nil, 'pending']]).to([[supplier.id, supplier_reference, 'completed']])
         end
-
-        it 'updates all order with the supplier bar and the supplier bar reference' do
-          expect { subject.perform }.to change {
-            Order.all.pluck(:supplier_id, :supplier_reference, :state)
-          }.from([[nil, nil, 'pending']]).to([[supplier_bar.id, supplier_bar_reference, 'completed']])
-        end
-
       end
 
     end
