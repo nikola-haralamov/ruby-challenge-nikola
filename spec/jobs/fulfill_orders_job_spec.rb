@@ -4,8 +4,6 @@ RSpec.describe FulfillOrdersJob, type: :job do
   describe '#perform' do
     subject { described_class.new }
 
-    #let!(:order) { create(:order) }
-
     let!(:order) do
       Order.create(
         customer_name: "Lionel Messi",
@@ -15,7 +13,7 @@ RSpec.describe FulfillOrdersJob, type: :job do
     end
 
     context 'when there are no suppliers' do
-      it 'does not change any order' do
+      it 'does not change order' do
         expect { subject.perform }.not_to(change { order.attributes })
       end
     end
@@ -30,12 +28,12 @@ RSpec.describe FulfillOrdersJob, type: :job do
           allow(SupplierBarApi::Client).to receive(:stock).and_return(0)
         end
 
-        it 'does not change any order' do
+        it 'does not change order' do
           expect { subject.perform }.not_to(change { order.attributes })
         end
       end
 
-      context 'and orders can be fulfilled by a supplier' do
+      context 'and order can be fulfilled by a supplier' do
         let(:supplier_foo_reference) { SecureRandom.uuid }
         let(:supplier_bar_reference) { SecureRandom.uuid }
 
@@ -46,13 +44,13 @@ RSpec.describe FulfillOrdersJob, type: :job do
           allow(SupplierBarApi::Client).to receive(:fulfill).and_return(supplier_bar_reference)
         end
 
-        it 'updates all orders with the supplier foo and the supplier foo reference' do
+        it 'updates order with the supplier foo and the supplier foo reference' do
           expect { subject.perform }.to change {
             Order.all.pluck(:supplier_id, :supplier_reference, :state)
           }.from([[nil, nil, 'pending']]).to([[supplier_foo.id, supplier_foo_reference, 'completed']])
         end
 
-        it 'updates all orders with the supplier bar and the supplier bar reference' do
+        it 'updates all order with the supplier bar and the supplier bar reference' do
           expect { subject.perform }.to change {
             Order.all.pluck(:supplier_id, :supplier_reference, :state)
           }.from([[nil, nil, 'pending']]).to([[supplier_bar.id, supplier_bar_reference, 'completed']])

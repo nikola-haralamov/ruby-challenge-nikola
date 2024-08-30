@@ -49,12 +49,4 @@ class FulfillOrdersJob < ApplicationJob
       raise "Can not return client for suplier: #{suplier.name}"
     end
   end
-
-  # def supplier_foo
-  #   Supplier.find_by(name: 'supplier_foo')
-  # end
-
-  # def supplier_bar
-  #   Supplier.find_by(name: 'supplier_bar')
-  # end
 end
