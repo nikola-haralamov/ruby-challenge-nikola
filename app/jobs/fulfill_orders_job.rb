@@ -6,7 +6,7 @@ class FulfillOrdersJob < ApplicationJob
 
   def perform(*args)
     Order.transaction do
-      Order.pending.find_each do |order|
+      Order.includes(:product, :supplier).where.not(supplier: nil).pending.find_each do |order|
         fulfill_order(order)
       end
     end
@@ -28,15 +28,13 @@ class FulfillOrdersJob < ApplicationJob
         state: Order.states[:completed]
       )
     else
-      Rails.logger.info "Could not find a supplier with stock to fulfill order for #{order.customer_name}".alarmify
+      Rails.logger.info "Could not find a supplier with stock to fulfill order for #{order.customer_name}"
     end
   end
 
   def order_fulfilling_supplier(order)
-    Supplier.all.find do |supplier|
-      stock = get_api_client(supplier).stock(product_name: order.product.name)
-      stock.positive?
-    end
+    stock = get_api_client(order.supplier).stock(product_name: order.product.name)
+    stock.positive?
   end
 
   def get_api_client(supplier)
@@ -46,7 +44,7 @@ class FulfillOrdersJob < ApplicationJob
     when 'supplier_bar'
       SupplierBarApi::Client
     else
-      raise "Can not return client for suplier: #{suplier.name}"
+      raise "Can not return client for supplier: #{supplier.name}"
     end
   end
 end
