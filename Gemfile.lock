@@ -74,8 +74,6 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.8)
-    bootsnap (1.18.4)
-      msgpack (~> 1.2)
     brakeman (6.2.1)
       racc
     builder (3.3.0)
@@ -111,7 +109,6 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.25.1)
-    msgpack (1.7.2)
     net-imap (0.4.16)
       date
       net-protocol
@@ -122,6 +119,16 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
+    nokogiri (1.16.7-aarch64-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-arm-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.7-x86-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-x86_64-darwin)
+      racc (~> 1.4)
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     parallel (1.26.3)
@@ -239,10 +246,14 @@ GEM
     zeitwerk (2.6.18)
 
 PLATFORMS
+  aarch64-linux
+  arm-linux
+  arm64-darwin
+  x86-linux
+  x86_64-darwin
   x86_64-linux
 
 DEPENDENCIES
-  bootsnap
   brakeman
   debug
   pg (~> 1.1)

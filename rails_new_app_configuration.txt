@@ -13,6 +13,8 @@ rails new app --api \
 --skip-test \
 --skip-system-test \
 --skip-bundle \
+--skip-bootsnap \
+--skip-hotwire \
 --skip-sprockets \
 --skip-yarn \
 --database=postgresql
