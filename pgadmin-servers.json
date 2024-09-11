@@ -5,7 +5,7 @@
             "Name": "Server",
             "Host": "postgres",
             "Port": 5432,
-            "MaintenanceDB": "app",
+            "MaintenanceDB": "app_development",
             "Username": "postgres",
             "SSLMode": "prefer"
         }
