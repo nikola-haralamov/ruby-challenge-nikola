@@ -6,7 +6,10 @@ class FulfillOrdersJob < ApplicationJob
 
   def perform(*args)
     Order.transaction do
-      Order.includes(:product, :supplier).where.not(supplier: nil).pending.find_each do |order|
+      Order.includes(:product, :supplier)
+           .where.not(supplier: nil)
+           .where(pending: Order.states[:pending])
+           .find_each do |order|
         fulfill_order(order)
       end
     end
